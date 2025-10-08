@@ -8,10 +8,14 @@ import com.example.demo.model.Member;
 import com.example.demo.model.MemberRepository;
 import com.example.demo.service.ArticleService;
 import com.example.demo.service.MemberService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -60,5 +64,16 @@ public class MemberController {
     @ResponseStatus(HttpStatus.CREATED)
     public ArticleResponse postArticle(@PathVariable("id") Long id, @RequestBody ArticleRequest articleRequest) {
         return articleService.create(id, articleRequest);
+    }
+    @GetMapping("/{id}/articles")
+    public void getArticle(@PathVariable("id") Long id, HttpServletResponse response) throws ServletException, IOException {
+        response.sendRedirect("/api/articles?memberId=" + id);
+    }
+    @GetMapping("/{id}/articles")
+    public void getArticle(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) throws  ServletException, IOException {
+        request.getSession()
+                .getServletContext()
+                .getRequestDispatcher("/api/articles?memberId="+id)
+                .forward(request, response);
     }
 }

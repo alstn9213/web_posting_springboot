@@ -8,7 +8,10 @@ import com.example.demo.model.ArticleRepository;
 import com.example.demo.model.Member;
 import com.example.demo.model.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.NotFound;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,5 +38,42 @@ public class ArticleService {
                 .member(member).build();
         articleRepository.save(article);
         return mapToArticleResponse(article);
+    }
+
+    public List<ArticleResponse> findAll() {
+        return articleRepository.findAll()
+                .stream()
+                .map(this::mapToArticleResponse)
+                .toList();
+    }
+
+    public List<ArticleResponse> findByMemberId(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotFoundException::new);
+        return articleRepository.findByMember(member)
+                .stream()
+                .map(this::mapToArticleResponse)
+                .toList();
+    }
+
+    public ArticleResponse findById(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+        return mapToArticleResponse(article);
+    }
+
+    public ArticleResponse update(Long id, ArticleRequest articleRequest) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+        article.setTitle(articleRequest.getTitle());
+        article.setDescription(articleRequest.getDescription());
+        articleRepository.save(article);
+        return mapToArticleResponse(article);
+    }
+
+    public void delete(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+        articleRepository.delete(article);
     }
 }
