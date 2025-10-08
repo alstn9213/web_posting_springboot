@@ -76,4 +76,9 @@ public class MemberController {
                 .getRequestDispatcher("/api/articles?memberId="+id)
                 .forward(request, response);
     }
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED) // batch : 일괄
+    public List<MemberResponse> postBatch(@RequestBody List<MemberRequest> memberRequests) {
+        return memberService.createBatch(memberRequests);
+    }
 }

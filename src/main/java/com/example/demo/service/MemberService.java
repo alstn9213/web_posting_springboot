@@ -7,6 +7,7 @@ import com.example.demo.model.Member;
 import com.example.demo.model.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,5 +64,27 @@ public class MemberService {
         Member member = memberRepository.findById(id).orElseThrow(NotFoundException::new)
 ;
         memberRepository.delete(member);
+    }
+//    @Transactional
+//    public List<MemberResponse> createBatch(List<MemberRequest> memberRequests) {
+//        return memberRequests.stream().map(this::create).toList();
+//    }
+
+//    @Transactional
+//    public List<MemberResponse> createBatch(List<MemberRequest> memberRequests) {
+//        List<MemberResponse> memberResponses = memberRequests.stream()
+//                .map(this::create).toList();
+//        try{
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//        return memberResponses;
+//    }
+    @Transactional(rollbackFor = {Exception.class})
+    public List<MemberResponse> createBatch(List<MemberRequest> memberRequests) {
+        List<MemberResponse> memberResponses = memberRequests.stream()
+                .map(this::create).toList();
+        return memberResponses;
     }
 }
